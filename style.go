@@ -3,12 +3,12 @@ package badge
 var flatTemplate = stripXmlWhitespace(`
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{{.Bounds.Dx}}" height="20">
   <linearGradient id="smooth" x2="0" y2="100%">
-    <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+    <stop offset="0" stop-color="#bbb" stop-opacity=".0"/>
     <stop offset="1" stop-opacity=".1"/>
   </linearGradient>
 
   <mask id="round">
-    <rect width="{{.Bounds.Dx}}" height="20" rx="3" fill="#fff"/>
+    <rect width="{{.Bounds.Dx}}" height="20" rx="3" fill="{{or .BadgeColor "#fff" | html}}"/>
   </mask>
 
   <g mask="url(#round)">

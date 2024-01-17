@@ -14,6 +14,7 @@ import (
 type badge struct {
 	Subject    string
 	Status     string
+	BadgeColor Color
 	LabelColor Color
 	Color      Color
 	Bounds     bounds
@@ -38,7 +39,7 @@ type badgeDrawer struct {
 	mutex *sync.Mutex
 }
 
-func (d *badgeDrawer) Render(subject, status string, labelColor Color, color Color, w io.Writer) error {
+func (d *badgeDrawer) Render(subject, status string, badgeColor Color, labelColor Color, color Color, w io.Writer) error {
 	d.mutex.Lock()
 	subjectDx := d.measureString(subject)
 	statusDx := d.measureString(status)
@@ -47,6 +48,7 @@ func (d *badgeDrawer) Render(subject, status string, labelColor Color, color Col
 	bdg := badge{
 		Subject:    subject,
 		Status:     status,
+		BadgeColor: badgeColor,
 		LabelColor: labelColor,
 		Color:      color,
 		Bounds: bounds{
@@ -59,9 +61,9 @@ func (d *badgeDrawer) Render(subject, status string, labelColor Color, color Col
 	return d.tmpl.Execute(w, bdg)
 }
 
-func (d *badgeDrawer) RenderBytes(subject, status string, labelColor Color, color Color) ([]byte, error) {
+func (d *badgeDrawer) RenderBytes(subject, status string, badgeColor Color, labelColor Color, color Color) ([]byte, error) {
 	buf := &bytes.Buffer{}
-	err := d.Render(subject, status, labelColor, color, buf)
+	err := d.Render(subject, status, badgeColor, labelColor, color, buf)
 	return buf.Bytes(), err
 }
 
@@ -74,13 +76,13 @@ func (d *badgeDrawer) measureString(s string) float64 {
 }
 
 // Render renders a badge of the given color, with given subject and status to w.
-func Render(subject, status string, labelColor Color, color Color, w io.Writer) error {
-	return drawer.Render(subject, status, labelColor, color, w)
+func Render(subject, status string, badgeColor, labelColor Color, color Color, w io.Writer) error {
+	return drawer.Render(subject, status, badgeColor, labelColor, color, w)
 }
 
 // RenderBytes renders a badge of the given color, with given subject and status to bytes.
-func RenderBytes(subject, status string, labelColor Color, color Color) ([]byte, error) {
-	return drawer.RenderBytes(subject, status, labelColor, color)
+func RenderBytes(subject, status string, badgeColor Color, labelColor Color, color Color) ([]byte, error) {
+	return drawer.RenderBytes(subject, status, badgeColor, labelColor, color)
 }
 
 const (
