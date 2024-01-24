@@ -21,7 +21,7 @@ var flatTemplate = stripXmlWhitespace(`
     <text x="{{.Bounds.SubjectX}}" y="15" fill="#010101" fill-opacity=".3">{{.Subject | html}}</text>
     <text x="{{.Bounds.SubjectX}}" y="14">{{.Subject | html}}</text>
     <text x="{{.Bounds.StatusX}}" y="15" fill="#010101" fill-opacity=".3">{{.Status | html}}</text>
-    <text x="{{.Bounds.StatusX}}" y="14" fill="{{or .LabelColor "#fff" | html}}">{{.Status | html}}</text>
+    <text x="{{.Bounds.StatusX}}" y="15" fill="{{or .LabelColor "#fff" | html}}">{{.Status | html}}</text>
   </g>
 </svg>
 `)
