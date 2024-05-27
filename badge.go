@@ -84,6 +84,12 @@ func Render(subject, status string, badgeColor, labelColor Color, color Color, w
 func RenderBytes(subject, status string, badgeColor Color, labelColor Color, color Color) ([]byte, error) {
 	return drawer.RenderBytes(subject, status, badgeColor, labelColor, color)
 }
+func SetSocialTemplate() {
+	drawer.tmpl = template.Must(template.New("flat-social-template").Parse(flatSocialTemplate))
+}
+func SetFlatTemplate() {
+	drawer.tmpl = template.Must(template.New("flat-template").Parse(flatTemplate))
+}
 
 const (
 	dpi      = 72
