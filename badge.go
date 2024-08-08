@@ -61,7 +61,12 @@ func (d *badgeDrawer) Render(subject, status string, badgeColor Color, labelColo
 	return d.tmpl.Execute(w, bdg)
 }
 
-func (d *badgeDrawer) RenderBytes(subject, status string, badgeColor Color, labelColor Color, color Color) ([]byte, error) {
+func (d *badgeDrawer) RenderBytesFlat(subject, status string, badgeColor Color, labelColor Color, color Color) ([]byte, error) {
+	buf := &bytes.Buffer{}
+	err := d.Render(subject, status, badgeColor, labelColor, color, buf)
+	return buf.Bytes(), err
+}
+func (d *badgeDrawer) RenderBytesSocial(subject, status string, badgeColor Color, labelColor Color, color Color) ([]byte, error) {
 	buf := &bytes.Buffer{}
 	err := d.Render(subject, status, badgeColor, labelColor, color, buf)
 	return buf.Bytes(), err
@@ -77,18 +82,17 @@ func (d *badgeDrawer) measureString(s string) float64 {
 
 // Render renders a badge of the given color, with given subject and status to w.
 func Render(subject, status string, badgeColor, labelColor Color, color Color, w io.Writer) error {
-	return drawer.Render(subject, status, badgeColor, labelColor, color, w)
+	return drawerFlat.Render(subject, status, badgeColor, labelColor, color, w)
 }
 
-// RenderBytes renders a badge of the given color, with given subject and status to bytes.
-func RenderBytes(subject, status string, badgeColor Color, labelColor Color, color Color) ([]byte, error) {
-	return drawer.RenderBytes(subject, status, badgeColor, labelColor, color)
+// RenderBytesFlat renders a badge of the given color, with given subject and status to bytes.
+func RenderBytesFlat(subject, status string, badgeColor Color, labelColor Color, color Color) ([]byte, error) {
+	return drawerFlat.RenderBytesFlat(subject, status, badgeColor, labelColor, color)
 }
-func SetSocialTemplate() {
-	drawer.tmpl = template.Must(template.New("flat-social-template").Parse(flatSocialTemplate))
-}
-func SetFlatTemplate() {
-	drawer.tmpl = template.Must(template.New("flat-template").Parse(flatTemplate))
+
+// RenderBytesSocial renders a badge of the given color, with given subject and status to bytes.
+func RenderBytesSocial(subject, status string, badgeColor Color, labelColor Color, color Color) ([]byte, error) {
+	return drawerSocial.RenderBytesSocial(subject, status, badgeColor, labelColor, color)
 }
 
 const (
@@ -96,12 +100,18 @@ const (
 	fontsize = 11
 )
 
-var drawer *badgeDrawer
+var drawerFlat *badgeDrawer
+var drawerSocial *badgeDrawer
 
 func init() {
-	drawer = &badgeDrawer{
+	drawerFlat = &badgeDrawer{
 		fd:    mustNewFontDrawer(fontsize, dpi),
 		tmpl:  template.Must(template.New("flat-template").Parse(flatTemplate)),
+		mutex: &sync.Mutex{},
+	}
+	drawerSocial = &badgeDrawer{
+		fd:    mustNewFontDrawer(fontsize, dpi),
+		tmpl:  template.Must(template.New("flat-social-template").Parse(flatSocialTemplate)),
 		mutex: &sync.Mutex{},
 	}
 }
